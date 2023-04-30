@@ -1,11 +1,10 @@
-// ignore_for_file: non_constant_identifier_names
-
 import 'package:geolocator/geolocator.dart';
 
 /// Determine the current position of the device.
 ///
 /// When the location services are not enabled or permissions
 /// are denied the `Future` will return an error.
+// ignore: non_constant_identifier_names
 Future<Position> GetPosition() async {
   bool serviceEnabled;
   LocationPermission permission;

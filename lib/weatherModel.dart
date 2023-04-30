@@ -4,6 +4,7 @@ class Weather {
   var condition;
   var temp;
   var wind;
+  var wind_dr;
   var humidity;
   var gust;
   var uv;
@@ -17,6 +18,7 @@ class Weather {
       required this.condition,
       required this.temp,
       required this.wind,
+      required this.wind_dr,
       required this.humidity,
       required this.uv,
       required this.pressure,
@@ -28,6 +30,7 @@ class Weather {
     condition = json['current']['condition']['text'];
     temp = json['current']['temp_c'];
     wind = json['current']['wind_kph'];
+    wind_dr = json['current']['wind_dir'];
     humidity = json['current']['humidity'];
     last_update = json['current']['last_updated'];
   }
