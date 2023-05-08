@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
+import 'package:flutter_launcher_icons/utils.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:intl/intl.dart';
 import 'package:weather_appnlcntt/getLocation.dart';
@@ -24,13 +25,16 @@ class WeatherScreen extends StatelessWidget {
 
   info() async {
     var position = await GetPosition();
-    data = await client.getData(position.latitude, position.longitude);
+    printStatus(position.longitude.toString());
+    printStatus(position.latitude.toString());
+    data = await client.getData(position.longitude, position.latitude);
     return data;
   }
 
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
+    double fem = MediaQuery.of(context).size.width;
     return Stack(
       children: [
         Container(
@@ -44,28 +48,40 @@ class WeatherScreen extends StatelessWidget {
         ),
         Scaffold(
           backgroundColor: Colors.transparent,
-          appBar: AppBar(
-            title: Text(user.email!),
-            backgroundColor:
-                Colors.transparent, // <-- APPBAR WITH TRANSPARENT BG
-            elevation: 0, // <-- ELEVATION ZEROED
-          ),
           body: FutureBuilder(
               future: info(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.done) {
                   return SingleChildScrollView(
-                    child: Column(children: <Widget>[
+                      child: Column(
+                    children: <Widget>[
                       Container(
                         height: MediaQuery.of(context).size.width * 1,
                         width: MediaQuery.of(context).size.width * 1,
-                        padding: const EdgeInsets.only(top: 70),
+                        padding: const EdgeInsets.only(top: 50),
                         margin:
-                            const EdgeInsets.only(right: 10, left: 10, top: 40),
+                            const EdgeInsets.only(right: 10, left: 10, top: 50),
                         decoration: BoxDecoration(
                           color: Color.fromARGB(255, 235, 235, 235)
-                              .withOpacity(0.8),
+                              .withOpacity(0.5),
                           borderRadius: BorderRadius.circular(40),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Color.fromARGB(75, 145, 145, 145),
+                              offset: const Offset(
+                                5.0,
+                                5.0,
+                              ),
+                              blurRadius: 10.0,
+                              spreadRadius: 2.0,
+                            ), //BoxShadow
+                            BoxShadow(
+                              color: Color.fromRGBO(255, 255, 255, 0.313),
+                              offset: const Offset(0.0, 0.0),
+                              blurRadius: 0.0,
+                              spreadRadius: 0.0,
+                            ), //BoxShadow
+                          ],
                         ),
                         child: Column(children: [
                           Text(
@@ -80,7 +96,8 @@ class WeatherScreen extends StatelessWidget {
                           Text(
                             dayFormat,
                             style: TextStyle(
-                                color: Colors.white.withOpacity(0.9),
+                                color: Color.fromARGB(255, 90, 90, 90)
+                                    .withOpacity(0.9),
                                 fontSize: 15,
                                 fontFamily: 'Roboto'),
                           ),
@@ -91,7 +108,7 @@ class WeatherScreen extends StatelessWidget {
                           Text(
                             '${data?.condition}',
                             style: const TextStyle(
-                                color: Colors.white,
+                                color: Color.fromARGB(179, 34, 34, 34),
                                 fontSize: 30,
                                 fontWeight: FontWeight.w600,
                                 fontFamily: 'Roboto'),
@@ -104,17 +121,18 @@ class WeatherScreen extends StatelessWidget {
                             style: TextStyle(
                                 color: Color.fromARGB(255, 90, 90, 90)
                                     .withOpacity(0.9),
-                                fontSize: 75,
+                                fontSize:
+                                    0.1 * MediaQuery.of(context).size.height,
                                 fontWeight: FontWeight.w800,
                                 fontFamily: 'Roboto'),
                           ),
                           const SizedBox(
-                            height: 20,
+                            height: 40,
                           ),
                           Text(
-                            'Last Update:  ${data.last_update}',
+                            'Last Update: ${data?.last_update} ',
                             style: const TextStyle(
-                                color: Colors.white,
+                                color: Color.fromARGB(165, 58, 58, 58),
                                 fontSize: 15,
                                 fontWeight: FontWeight.w600,
                                 fontFamily: 'Roboto'),
@@ -122,14 +140,14 @@ class WeatherScreen extends StatelessWidget {
                         ]),
                       ),
                       Container(
-                        margin:
-                            const EdgeInsets.only(top: 50, right: 10, left: 10),
+                        margin: const EdgeInsets.only(
+                            top: 20, right: 10, left: 10, bottom: 20),
                         padding: const EdgeInsets.only(
                             top: 10, right: 10, left: 10, bottom: 10),
                         decoration: BoxDecoration(
                           color: Color.fromARGB(255, 235, 235, 235)
-                              .withOpacity(0.8),
-                          borderRadius: BorderRadius.circular(20),
+                              .withOpacity(0.45),
+                          borderRadius: BorderRadius.circular(30),
                         ),
                         child: Row(
                           children: [
@@ -181,7 +199,7 @@ class WeatherScreen extends StatelessWidget {
                                   height: 10,
                                 ),
                                 Text(
-                                  '${data?.humidity}',
+                                  '${data?.humidity} %',
                                   style: TextStyle(
                                     color: Color.fromARGB(255, 90, 90, 90)
                                         .withOpacity(0.9),
@@ -243,9 +261,368 @@ class WeatherScreen extends StatelessWidget {
                             )),
                           ],
                         ),
-                      )
-                    ]),
-                  );
+                      ),
+                      SizedBox(
+                          height: 170,
+                          child: ListView(
+                            physics: ClampingScrollPhysics(),
+                            shrinkWrap: true,
+                            scrollDirection: Axis.horizontal,
+                            children: [
+                              Container(
+                                  width: 130,
+                                  margin: EdgeInsets.only(
+                                      left: 10, bottom: 10, right: 10),
+                                  padding: EdgeInsets.only(
+                                      top: 13, bottom: 13, left: 13, right: 13),
+                                  decoration: BoxDecoration(
+                                    color: Color.fromARGB(255, 235, 235, 235)
+                                        .withOpacity(0.45),
+                                    borderRadius: BorderRadius.circular(30),
+                                  ),
+                                  child: Column(
+                                    children: [
+                                      Image.network(
+                                        'https:${data?.icond1}',
+                                        fit: BoxFit.fill,
+                                        width:
+                                            MediaQuery.of(context).size.width *
+                                                0.17,
+                                      ),
+                                      const SizedBox(
+                                        height: 10,
+                                      ),
+                                      Text(
+                                        '${data?.tempd1} º',
+                                        style: TextStyle(
+                                          color: Color.fromARGB(255, 90, 90, 90)
+                                              .withOpacity(0.9),
+                                          fontFamily: 'Roboto',
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      const SizedBox(
+                                        height: 5,
+                                      ),
+                                      Text(
+                                        DateFormat('EEEE').format(
+                                            DateTime.parse(
+                                                data?.day1 ?? '2023-05-08')),
+                                        style: TextStyle(
+                                          color: Color.fromARGB(255, 90, 90, 90)
+                                              .withOpacity(0.9),
+                                          fontFamily: 'Roboto',
+                                          fontSize: 13,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ],
+                                  )),
+                              Container(
+                                  width: 130,
+                                  margin: EdgeInsets.only(
+                                      left: 10, bottom: 10, right: 10),
+                                  padding: EdgeInsets.only(
+                                      top: 13, bottom: 13, left: 13, right: 13),
+                                  decoration: BoxDecoration(
+                                    color: Color.fromARGB(255, 235, 235, 235)
+                                        .withOpacity(0.45),
+                                    borderRadius: BorderRadius.circular(30),
+                                  ),
+                                  child: Column(
+                                    children: [
+                                      Image.network(
+                                        'https:${data?.icond2}',
+                                        fit: BoxFit.fill,
+                                        width:
+                                            MediaQuery.of(context).size.width *
+                                                0.17,
+                                      ),
+                                      const SizedBox(
+                                        height: 10,
+                                      ),
+                                      Text(
+                                        '${data?.tempd2} º',
+                                        style: TextStyle(
+                                          color: Color.fromARGB(255, 90, 90, 90)
+                                              .withOpacity(0.9),
+                                          fontFamily: 'Roboto',
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      const SizedBox(
+                                        height: 5,
+                                      ),
+                                      Text(
+                                        DateFormat('EEEE').format(
+                                            DateTime.parse(
+                                                data?.day2 ?? '2023-05-08')),
+                                        style: TextStyle(
+                                          color: Color.fromARGB(255, 90, 90, 90)
+                                              .withOpacity(0.9),
+                                          fontFamily: 'Roboto',
+                                          fontSize: 13,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ],
+                                  )),
+                              Container(
+                                  width: 130,
+                                  margin: EdgeInsets.only(
+                                      left: 10, bottom: 10, right: 10),
+                                  padding: EdgeInsets.only(
+                                      top: 13, bottom: 13, left: 13, right: 13),
+                                  decoration: BoxDecoration(
+                                    color: Color.fromARGB(255, 235, 235, 235)
+                                        .withOpacity(0.45),
+                                    borderRadius: BorderRadius.circular(30),
+                                  ),
+                                  child: Column(
+                                    children: [
+                                      Image.network(
+                                        'https:${data?.icond3}',
+                                        fit: BoxFit.fill,
+                                        width:
+                                            MediaQuery.of(context).size.width *
+                                                0.17,
+                                      ),
+                                      const SizedBox(
+                                        height: 10,
+                                      ),
+                                      Text(
+                                        '${data?.tempd3} º',
+                                        style: TextStyle(
+                                          color: Color.fromARGB(255, 90, 90, 90)
+                                              .withOpacity(0.9),
+                                          fontFamily: 'Roboto',
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      const SizedBox(
+                                        height: 5,
+                                      ),
+                                      Text(
+                                        DateFormat('EEEE').format(
+                                            DateTime.parse(
+                                                data?.day3 ?? '2023-05-08')),
+                                        style: TextStyle(
+                                          color: Color.fromARGB(255, 90, 90, 90)
+                                              .withOpacity(0.9),
+                                          fontFamily: 'Roboto',
+                                          fontSize: 13,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ],
+                                  )),
+                              Container(
+                                  width: 130,
+                                  margin: EdgeInsets.only(
+                                      left: 10, bottom: 10, right: 10),
+                                  padding: EdgeInsets.only(
+                                      top: 13, bottom: 13, left: 13, right: 13),
+                                  decoration: BoxDecoration(
+                                    color: Color.fromARGB(255, 235, 235, 235)
+                                        .withOpacity(0.45),
+                                    borderRadius: BorderRadius.circular(30),
+                                  ),
+                                  child: Column(
+                                    children: [
+                                      Image.network(
+                                        'https:${data?.icond4}',
+                                        fit: BoxFit.fill,
+                                        width:
+                                            MediaQuery.of(context).size.width *
+                                                0.17,
+                                      ),
+                                      const SizedBox(
+                                        height: 10,
+                                      ),
+                                      Text(
+                                        '${data?.tempd4} º',
+                                        style: TextStyle(
+                                          color: Color.fromARGB(255, 90, 90, 90)
+                                              .withOpacity(0.9),
+                                          fontFamily: 'Roboto',
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      const SizedBox(
+                                        height: 5,
+                                      ),
+                                      Text(
+                                        DateFormat('EEEE').format(
+                                            DateTime.parse(
+                                                data?.day4 ?? '2023-05-08')),
+                                        style: TextStyle(
+                                          color: Color.fromARGB(255, 90, 90, 90)
+                                              .withOpacity(0.9),
+                                          fontFamily: 'Roboto',
+                                          fontSize: 13,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ],
+                                  )),
+                              Container(
+                                  width: 130,
+                                  margin: EdgeInsets.only(
+                                      left: 10, bottom: 10, right: 10),
+                                  padding: EdgeInsets.only(
+                                      top: 13, bottom: 13, left: 13, right: 13),
+                                  decoration: BoxDecoration(
+                                    color: Color.fromARGB(255, 235, 235, 235)
+                                        .withOpacity(0.45),
+                                    borderRadius: BorderRadius.circular(30),
+                                  ),
+                                  child: Column(
+                                    children: [
+                                      Image.network(
+                                        'https:${data?.icond5}',
+                                        fit: BoxFit.fill,
+                                        width:
+                                            MediaQuery.of(context).size.width *
+                                                0.17,
+                                      ),
+                                      const SizedBox(
+                                        height: 10,
+                                      ),
+                                      Text(
+                                        '${data?.tempd5} º',
+                                        style: TextStyle(
+                                          color: Color.fromARGB(255, 90, 90, 90)
+                                              .withOpacity(0.9),
+                                          fontFamily: 'Roboto',
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      const SizedBox(
+                                        height: 5,
+                                      ),
+                                      Text(
+                                        DateFormat('EEEE').format(
+                                            DateTime.parse(
+                                                data?.day5 ?? '2023-05-08')),
+                                        style: TextStyle(
+                                          color: Color.fromARGB(255, 90, 90, 90)
+                                              .withOpacity(0.9),
+                                          fontFamily: 'Roboto',
+                                          fontSize: 13,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ],
+                                  )),
+                              Container(
+                                  width: 130,
+                                  margin: EdgeInsets.only(
+                                      left: 10, bottom: 10, right: 10),
+                                  padding: EdgeInsets.only(
+                                      top: 13, bottom: 13, left: 13, right: 13),
+                                  decoration: BoxDecoration(
+                                    color: Color.fromARGB(255, 235, 235, 235)
+                                        .withOpacity(0.45),
+                                    borderRadius: BorderRadius.circular(30),
+                                  ),
+                                  child: Column(
+                                    children: [
+                                      Image.network(
+                                        'https:${data?.icond6}',
+                                        fit: BoxFit.fill,
+                                        width:
+                                            MediaQuery.of(context).size.width *
+                                                0.17,
+                                      ),
+                                      const SizedBox(
+                                        height: 10,
+                                      ),
+                                      Text(
+                                        '${data?.tempd6} º',
+                                        style: TextStyle(
+                                          color: Color.fromARGB(255, 90, 90, 90)
+                                              .withOpacity(0.9),
+                                          fontFamily: 'Roboto',
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      const SizedBox(
+                                        height: 5,
+                                      ),
+                                      Text(
+                                        DateFormat('EEEE').format(
+                                            DateTime.parse(
+                                                data?.day6 ?? '22023-05-08')),
+                                        style: TextStyle(
+                                          color: Color.fromARGB(255, 90, 90, 90)
+                                              .withOpacity(0.9),
+                                          fontFamily: 'Roboto',
+                                          fontSize: 13,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ],
+                                  )),
+                              Container(
+                                  width: 130,
+                                  margin: EdgeInsets.only(
+                                      left: 10, bottom: 10, right: 10),
+                                  padding: EdgeInsets.only(
+                                      top: 13, bottom: 13, left: 13, right: 13),
+                                  decoration: BoxDecoration(
+                                    color: Color.fromARGB(255, 235, 235, 235)
+                                        .withOpacity(0.45),
+                                    borderRadius: BorderRadius.circular(30),
+                                  ),
+                                  child: Column(
+                                    children: [
+                                      Image.network(
+                                        'https:${data?.icond7}',
+                                        fit: BoxFit.fill,
+                                        width:
+                                            MediaQuery.of(context).size.width *
+                                                0.17,
+                                      ),
+                                      const SizedBox(
+                                        height: 10,
+                                      ),
+                                      Text(
+                                        '${data?.tempd7} º',
+                                        style: TextStyle(
+                                          color: Color.fromARGB(255, 90, 90, 90)
+                                              .withOpacity(0.9),
+                                          fontFamily: 'Roboto',
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      const SizedBox(
+                                        height: 5,
+                                      ),
+                                      Text(
+                                        DateFormat('EEEE').format(
+                                            DateTime.parse(
+                                                data?.day7 ?? '2023-05-08')),
+                                        style: TextStyle(
+                                          color: Color.fromARGB(255, 90, 90, 90)
+                                              .withOpacity(0.9),
+                                          fontFamily: 'Roboto',
+                                          fontSize: 13,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ],
+                                  )),
+                            ],
+                          )),
+                    ],
+                  ));
                 } else {
                   return const Center(
                     child: SpinKitFadingCube(

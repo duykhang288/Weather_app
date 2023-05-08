@@ -20,7 +20,6 @@ class _HomePageState extends State<HomePage> {
   int index = 0;
   final screens = [
     WeatherScreen(),
-    ProfileScreen(),
     CityScreen(),
     SettingScreen(),
   ];
@@ -32,16 +31,12 @@ class _HomePageState extends State<HomePage> {
           onDestinationSelected: (index) => setState(() => this.index = index),
           destinations: [
             NavigationDestination(
-              icon: Icon(Icons.explore),
+              icon: Icon(Icons.home),
               label: 'Home',
             ),
             NavigationDestination(
               icon: Icon(Icons.explore),
               label: 'City',
-            ),
-            NavigationDestination(
-              icon: Icon(Icons.person),
-              label: 'Profile',
             ),
             NavigationDestination(
               icon: Icon(Icons.settings_rounded),
